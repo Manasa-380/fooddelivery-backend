@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import java.util.List;
 import java.util.Scanner;
+import java.math.BigDecimal;
 
 @SpringBootApplication
 public class FooddeliveryApplication {
@@ -56,7 +57,7 @@ public class FooddeliveryApplication {
 						r.setUserId(sc.nextLong());
 						sc.nextLine();
 						System.out.print("Restaurant Name: ");
-						r.setName(sc.nextLine());
+						r.setRestaurantName(sc.nextLine());
 						System.out.print("Location: ");
 						r.setLocation(sc.nextLine());
 						System.out.print("Contact Number: ");
@@ -70,7 +71,7 @@ public class FooddeliveryApplication {
 						System.out.println("\n--- All Restaurants ---");
 						list.forEach(r -> System.out.println(
 								r.getRestaurantId() + " | " +
-										r.getName() + " | " +
+										r.getRestaurantName() + " | " +
 										r.getLocation() + " | " +
 										r.getContactNumber()));
 					}
@@ -82,7 +83,7 @@ public class FooddeliveryApplication {
 						sc.nextLine();
 						System.out.println(
 								r.getRestaurantId() + " | " +
-										r.getName() + " | " +
+										r.getRestaurantName() + " | " +
 										r.getLocation() + " | " +
 										r.getContactNumber());
 					}
@@ -93,7 +94,7 @@ public class FooddeliveryApplication {
 						sc.nextLine();
 						Restaurant r = new Restaurant();
 						System.out.print("New Name: ");
-						r.setName(sc.nextLine());
+						r.setRestaurantName(sc.nextLine());
 						System.out.print("New Location: ");
 						r.setLocation(sc.nextLine());
 						System.out.print("New Contact: ");
@@ -117,7 +118,7 @@ public class FooddeliveryApplication {
 						System.out.print("Description: ");
 						dto.setDescription(sc.nextLine());
 						System.out.print("Price: ");
-						dto.setPrice(sc.nextDouble());
+						dto.setPrice(sc.nextBigDecimal());
 						sc.nextLine();
 						menuService.addMenuItem(dto);
 					}
@@ -132,7 +133,7 @@ public class FooddeliveryApplication {
 						System.out.print("New Description: ");
 						dto.setDescription(sc.nextLine());
 						System.out.print("New Price: ");
-						dto.setPrice(sc.nextDouble());
+						dto.setPrice(sc.nextBigDecimal());
 						sc.nextLine();
 						menuService.updateMenuItem(id, dto);
 					}
