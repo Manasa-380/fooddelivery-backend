@@ -20,7 +20,7 @@ public class RestaurantRepository {
             Restaurant r = new Restaurant();
             r.setRestaurantId(rs.getLong("restaurant_id"));
             r.setUserId(rs.getLong("user_id"));
-            r.setName(rs.getString("restaurant_name"));
+            r.setRestaurantName(rs.getString("restaurant_name"));
             r.setLocation(rs.getString("location"));
             r.setContactNumber(rs.getString("contact_number"));
             return r;
@@ -31,7 +31,7 @@ public class RestaurantRepository {
         String sql = "INSERT INTO restaurants (user_id, restaurant_name, location, contact_number) VALUES (?,?,?,?)";
         jdbcTemplate.update(sql,
                 restaurant.getUserId(),
-                restaurant.getName(),
+                restaurant.getRestaurantName(),
                 restaurant.getLocation(),
                 restaurant.getContactNumber());
         System.out.println("Restaurant saved successfully!");
@@ -50,7 +50,7 @@ public class RestaurantRepository {
     public void update(Restaurant restaurant) {
         String sql = "UPDATE restaurants SET restaurant_name=?, location=?, contact_number=? WHERE restaurant_id=?";
         jdbcTemplate.update(sql,
-                restaurant.getName(),
+                restaurant.getRestaurantName(),
                 restaurant.getLocation(),
                 restaurant.getContactNumber(),
                 restaurant.getRestaurantId());
