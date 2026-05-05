@@ -1,281 +1,228 @@
-//package com.fooddelivery;
-//
-//import com.fooddelivery.dto.request.OrderItemRequestDto;
-//import com.fooddelivery.dto.request.OrderRequestDto;
-//import com.fooddelivery.dto.response.OrderResponseDto;
-//import com.fooddelivery.entity.MenuItem;
-//import com.fooddelivery.repository.CustomerRepository;
-//import com.fooddelivery.repository.MenuItemRepository;
-//import com.fooddelivery.repository.RestaurantRepository;
-//import com.fooddelivery.service.OrderService;
-//
-//import org.springframework.boot.CommandLineRunner;
-//import org.springframework.boot.SpringApplication;
-//import org.springframework.boot.autoconfigure.SpringBootApplication;
-//import org.springframework.context.annotation.Bean;
-//
-//import java.util.*;
-//
-//@SpringBootApplication
-//public class FooddeliveryApplication {
-//
-//    public static void main(String[] args) {
-//        SpringApplication.run(FooddeliveryApplication.class, args);
-//    }
-//
-//    @Bean
-//    CommandLineRunner testOrderModule(
-//            OrderService orderService,
-//            CustomerRepository customerRepository,
-//            RestaurantRepository restaurantRepository,
-//            MenuItemRepository menuItemRepository
-//    ) {
-//        return args -> {
-//
-//            Scanner scanner = new Scanner(System.in);
-//
-//            System.out.println("===== PLACE ORDER =====");
-//
-//            // ✅ Customer name
-//            System.out.print("Enter your name: ");
-//            String customerName = scanner.nextLine();
-//            Long customerId =
-//                    customerRepository.findCustomerIdByName(customerName);
-//
-//            // ✅ Restaurant name
-//            System.out.print("Enter restaurant name: ");
-//            String restaurantName = scanner.nextLine();
-//            Long restaurantId =
-//                    restaurantRepository.findRestaurantIdByName(restaurantName);
-//
-//            // ✅ SHOW ONLY AVAILABLE ITEMS (quantity > 0)
-//            System.out.println("\nAvailable items:");
-//            List<MenuItem> menuItems =
-//                    menuItemRepository.findAllAvailableItemsByRestaurant(restaurantId);
-//
-//            for (MenuItem m : menuItems) {
-//                System.out.println(
-//                        "- " + m.getName() +
-//                                " (₹" + m.getPrice() + ") – Available: " + m.getQuantity()
-//                );
-//            }
-//
-//            List<OrderItemRequestDto> items = new ArrayList<>();
-//            Map<Long, Integer> selectedQuantities = new HashMap<>();
-//
-//            // ✅ MULTI‑ITEM LOOP WITH FULL VALIDATION
-//            while (true) {
-//
-//                System.out.print("\nEnter item name from above list: ");
-//                String itemName = scanner.nextLine();
-//
-//                MenuItem menuItem =
-//                        menuItemRepository.findMenuItemByName(itemName, restaurantId);
-//
-//                System.out.print("Enter quantity: ");
-//                int quantity = scanner.nextInt();
-//                scanner.nextLine(); // consume newline
-//
-//                // ✅ Block zero or negative quantity
-//                if (quantity <= 0) {
-//                    System.out.println("❌ Quantity must be greater than zero");
-//                    continue;
-//                }
-//
-//                int alreadySelected =
-//                        selectedQuantities.getOrDefault(menuItem.getItemId(), 0);
-//
-//                int remainingStock =
-//                        menuItem.getQuantity() - alreadySelected;
-//
-//                // ✅ Block out-of-stock
-//                if (remainingStock <= 0) {
-//                    System.out.println(
-//                            "❌ " + menuItem.getName() + " is out of stock"
-//                    );
-//                    continue;
-//                }
-//
-//                // ✅ Block over-ordering (cumulative)
-//                if (quantity > remainingStock) {
-//                    System.out.println(
-//                            "❌ Only " + remainingStock +
-//                                    " quantity available for " + menuItem.getName()
-//                    );
-//                    continue;
-//                }
-//
-//                // ✅ Add item
-//                items.add(new OrderItemRequestDto(
-//                        menuItem.getItemId(),
-//                        quantity
-//                ));
-//
-//                selectedQuantities.put(
-//                        menuItem.getItemId(),
-//                        alreadySelected + quantity
-//                );
-//
-//                System.out.print("Add another item? (yes/no): ");
-//                if (!scanner.nextLine().equalsIgnoreCase("yes")) {
-//                    break;
-//                }
-//            }
-//
-//            // ✅ Place order
-//            OrderRequestDto request = new OrderRequestDto();
-//            request.setCustomerId(customerId);
-//            request.setRestaurantId(restaurantId);
-//            request.setItems(items);
-//
-//            OrderResponseDto response = orderService.placeOrder(request);
-//
-//            System.out.println("\n✅ ORDER PLACED SUCCESSFULLY");
-//            System.out.println("Order ID: " + response.getOrderId());
-//            System.out.println("Total: " + response.getTotalAmount());
-//        };
-//    }
-//}
-
-
 package com.fooddelivery;
 
-import com.fooddelivery.dto.request.OrderItemRequestDto;
-import com.fooddelivery.dto.request.OrderRequestDto;
-import com.fooddelivery.dto.response.OrderResponseDto;
-import com.fooddelivery.entity.MenuItem;
-import com.fooddelivery.repository.CustomerRepository;
-import com.fooddelivery.repository.MenuItemRepository;
-import com.fooddelivery.repository.RestaurantRepository;
-import com.fooddelivery.service.OrderService;
-
+import com.fooddelivery.entity.Agent;
+import com.fooddelivery.entity.Customer;
+import com.fooddelivery.entity.Restaurant;
+import com.fooddelivery.entity.User;
+import com.fooddelivery.exception.InvalidRequestException;
+import com.fooddelivery.service.AuthService;
+import com.fooddelivery.service.CustomerService;
+import com.fooddelivery.service.DeliveryService;
+import com.fooddelivery.service.RestaurantService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
-import java.util.*;
+import java.util.Scanner;
 
 @SpringBootApplication
-public class FooddeliveryApplication {
+public class FooddeliveryApplication implements CommandLineRunner {
 
-    public static void main(String[] args) {
-        SpringApplication.run(FooddeliveryApplication.class, args);
-    }
+	private final AuthService authService;
+	private final CustomerService customerService;
+	private final RestaurantService restaurantService;
+	private final DeliveryService deliveryService;
 
-    @Bean
-    CommandLineRunner testOrderModule(
-            OrderService orderService,
-            CustomerRepository customerRepository,
-            RestaurantRepository restaurantRepository,
-            MenuItemRepository menuItemRepository
-    ) {
-        return args -> {
+	public FooddeliveryApplication(AuthService authService,
+								   CustomerService customerService,
+								   RestaurantService restaurantService,
+								   DeliveryService deliveryService) {
+		this.authService = authService;
+		this.customerService = customerService;
+		this.restaurantService = restaurantService;
+		this.deliveryService = deliveryService;
+	}
 
-            Scanner scanner = new Scanner(System.in);
+	public static void main(String[] args) {
+		SpringApplication.run(FooddeliveryApplication.class, args);
+	}
 
-            System.out.println("===== PLACE ORDER =====");
+	@Override
+	public void run(String... args) {
 
-            // ✅ Customer name
-            System.out.print("Enter your name: ");
-            String customerName = scanner.nextLine();
-            Long customerId =
-                    customerRepository.findCustomerIdByName(customerName);
+		Scanner scanner = new Scanner(System.in);
+		boolean running = true;
 
-            // ✅ Restaurant name
-            System.out.print("Enter restaurant name: ");
-            String restaurantName = scanner.nextLine();
-            Long restaurantId =
-                    restaurantRepository.findRestaurantIdByName(restaurantName);
+		while (running) {
+			System.out.println("\n===== FOOD DELIVERY SYSTEM =====");
+			System.out.println("1. Register");
+			System.out.println("2. Login");
+			System.out.println("3. Exit");
+			System.out.print("Enter choice: ");
 
-            // ✅ SHOW ONLY AVAILABLE ITEMS (quantity > 0)
-            System.out.println("\nAvailable items:");
-            List<MenuItem> menuItems =
-                    menuItemRepository.findAllAvailableItemsByRestaurant(restaurantId);
+			int choice;
+			try {
+				choice = Integer.parseInt(scanner.nextLine());
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input");
+				continue;
+			}
 
-            for (MenuItem m : menuItems) {
-                System.out.println(
-                        "- " + m.getName() +
-                                " (₹" + m.getPrice() + ") – Available: " + m.getQuantity()
-                );
-            }
+			switch (choice) {
+				case 1 -> register(scanner);
+				case 2 -> login(scanner);
+				case 3 -> {
+					System.out.println("👋 Exiting application...");
+					running = false;
+				}
+				default -> System.out.println("Invalid option");
+			}
+		}
 
-            List<OrderItemRequestDto> items = new ArrayList<>();
-            Map<Long, Integer> selectedQuantities = new HashMap<>();
+		scanner.close();
+	}
 
-            // ✅ MULTI‑ITEM LOOP (CORRECT & SAFE)
-            while (true) {
+	// ========================= REGISTER =========================
+	private void register(Scanner scanner) {
 
-                System.out.print("\nEnter item name from above list: ");
-                String itemName = scanner.nextLine();
+		try {
+			System.out.println("\n===== USER REGISTRATION =====");
 
-                MenuItem menuItem =
-                        menuItemRepository.findMenuItemByName(itemName, restaurantId);
+			User user = new User();
 
-                int alreadySelected =
-                        selectedQuantities.getOrDefault(menuItem.getItemId(), 0);
+			System.out.print("Email: ");
+			user.setEmail(scanner.nextLine().trim());
 
-                int remainingStock =
-                        menuItem.getQuantity() - alreadySelected;
+			System.out.println(
+					"Password must be:\n" +
+							"- At least 8 characters\n" +
+							"- Contain one special character (!@#$%^&*)"
+			);
+			System.out.print("Password: ");
+			user.setPassword(scanner.nextLine().trim());
 
-                // ✅ OUT OF STOCK
-                if (remainingStock <= 0) {
-                    System.out.println("❌ " + menuItem.getName() + " is out of stock");
+			System.out.print("Role (CUSTOMER / RESTAURANT_OWNER / AGENT): ");
+			String role = scanner.nextLine().trim().toUpperCase();
+			user.setRole(role);
 
-                    System.out.print("Do you want to add another item? (yes/no): ");
-                    if (!scanner.nextLine().equalsIgnoreCase("yes")) {
-                        break;
-                    }
-                    continue;
-                }
+			User savedUser = authService.register(user);
+			System.out.println("User registered successfully");
 
-                System.out.print("Enter quantity: ");
-                int quantity = scanner.nextInt();
-                scanner.nextLine(); // consume newline
+			// -------- ROLE‑BASED PROFILE CREATION --------
 
-                // ✅ BLOCK ZERO / NEGATIVE
-                if (quantity <= 0) {
-                    System.out.println("❌ Quantity must be greater than zero");
-                    continue;
-                }
+			if ("CUSTOMER".equals(role)) {
+				createCustomer(scanner, savedUser);
+			}
+			else if ("RESTAURANT_OWNER".equals(role)) {
+				createRestaurant(scanner, savedUser);
+			}
+			else if ("AGENT".equals(role)) {
+				createAgent(scanner, savedUser);
+			} else {
+				System.out.println("Unknown role, profile not created");
+			}
 
-                // ✅ BLOCK OVER‑ORDERING (CUMULATIVE)
-                if (quantity > remainingStock) {
-                    System.out.println(
-                            "❌ Only " + remainingStock +
-                                    " quantity available for " + menuItem.getName()
-                    );
-                    continue;
-                }
+		} catch (InvalidRequestException e) {
+			System.out.println("Registration failed: " + e.getMessage());
+			System.out.println("Please try again.");
+		} catch (Exception e) {
+			System.out.println("Unexpected error: " + e.getMessage());
+		}
+	}
 
-                // ✅ ADD ITEM TO ORDER
-                items.add(new OrderItemRequestDto(
-                        menuItem.getItemId(),
-                        quantity
-                ));
+	private void createCustomer(Scanner scanner, User user) {
+		System.out.println("\n===== CUSTOMER DETAILS =====");
 
-                selectedQuantities.put(
-                        menuItem.getItemId(),
-                        alreadySelected + quantity
-                );
+		Customer customer = new Customer();
+		System.out.print("Name: ");
+		customer.setCustomerName(scanner.nextLine());
 
-                System.out.print("Add another item? (yes/no): ");
-                if (!scanner.nextLine().equalsIgnoreCase("yes")) {
-                    break;
-                }
-            }
+		System.out.print("Phone: ");
+		customer.setPhone(scanner.nextLine());
 
-            // ✅ PLACE ORDER
-            OrderRequestDto request = new OrderRequestDto();
-            request.setCustomerId(customerId);
-            request.setRestaurantId(restaurantId);
-            request.setItems(items);
+		System.out.print("Address: ");
+		customer.setAddress(scanner.nextLine());
 
-            OrderResponseDto response = orderService.placeOrder(request);
+		customer.setUserId(user.getUserId());
+		customerService.createCustomer(customer);
 
-            System.out.println("\n✅ ORDER PLACED SUCCESSFULLY");
-            System.out.println("Order ID: " + response.getOrderId());
-            System.out.println("Total: " + response.getTotalAmount());
-        };
-    }
+		System.out.println("Customer profile created");
+	}
+
+	private void createRestaurant(Scanner scanner, User user) {
+		System.out.println("\n===== RESTAURANT DETAILS =====");
+
+		Restaurant restaurant = new Restaurant();
+		System.out.print("Restaurant name: ");
+		restaurant.setRestaurantName(scanner.nextLine());
+
+		System.out.print("Location: ");
+		restaurant.setLocation(scanner.nextLine());
+
+		System.out.print("Contact number: ");
+		restaurant.setContactNumber(scanner.nextLine());
+
+		restaurant.setUserId(user.getUserId());
+		restaurantService.registerRestaurant(restaurant);
+
+		System.out.println("Restaurant profile created");
+	}
+
+	private void createAgent(Scanner scanner, User user) {
+		System.out.println("\n===== AGENT DETAILS =====");
+
+		Agent agent = new Agent();
+		System.out.print("Agent name: ");
+		agent.setAgentName(scanner.nextLine());
+
+		System.out.print("Contact number: ");
+		agent.setContactNumber(scanner.nextLine());
+
+		agent.setUserId(user.getUserId());
+		deliveryService.createAgent(agent);
+
+		System.out.println("Agent profile created");
+	}
+
+	// ========================= LOGIN =========================
+	private void login(Scanner scanner) {
+
+		try {
+			System.out.println("\n===== USER LOGIN =====");
+
+			System.out.print("Email: ");
+			String email = scanner.nextLine();
+
+			System.out.print("Password: ");
+			String password = scanner.nextLine();
+
+			User user = authService.login(email, password);
+			System.out.println("Logged in as " + user.getRole());
+
+			// -------- ROLE‑BASED VIEW --------
+
+			if ("CUSTOMER".equals(user.getRole())) {
+				Customer customer =
+						customerService.getCustomerByUserId(user.getUserId());
+
+				System.out.println("\n===== CUSTOMER DETAILS =====");
+				System.out.println("Name    : " + customer.getCustomerName());
+				System.out.println("Phone   : " + customer.getPhone());
+				System.out.println("Address : " + customer.getAddress());
+			}
+
+			else if ("RESTAURANT_OWNER".equals(user.getRole())) {
+				Restaurant restaurant =
+						restaurantService.getByUserId(user.getUserId());
+
+				System.out.println("\n===== RESTAURANT DETAILS =====");
+				System.out.println("Name     : " + restaurant.getRestaurantName());
+				System.out.println("Location : " + restaurant.getLocation());
+				System.out.println("Contact  : " + restaurant.getContactNumber());
+			}
+
+			else if ("AGENT".equals(user.getRole())) {
+				Agent agent =
+						deliveryService.getAgentByUserId(user.getUserId());
+
+				System.out.println("\n===== AGENT DETAILS =====");
+				System.out.println("Name    : " + agent.getAgentName());
+				System.out.println("Phone   : " + agent.getContactNumber());
+				System.out.println("Status  : " + agent.getAgentStatus());
+			}
+
+		} catch (Exception e) {
+			System.out.println("Login failed: " + e.getMessage());
+		}
+	}
 }

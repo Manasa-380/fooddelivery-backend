@@ -3,7 +3,6 @@ package com.fooddelivery.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.math.BigDecimal;
 
 import java.math.BigDecimal;
 
@@ -16,6 +15,6 @@ public class MenuItem {
     private String description;
     private BigDecimal price;
     private Long restaurantId;
-    private boolean isAvailable;
+    private boolean available;
     private int quantity;
 }
