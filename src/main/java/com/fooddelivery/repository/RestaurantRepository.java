@@ -41,7 +41,6 @@ public class RestaurantRepository {
         String sql = "SELECT * FROM restaurants WHERE restaurant_id=?";
         return jdbcTemplate.queryForObject(sql, rowMapper, restaurantId);
     }
-
     public List<Restaurant> findAll() {
         String sql = "SELECT * FROM restaurants";
         return jdbcTemplate.query(sql, rowMapper);
