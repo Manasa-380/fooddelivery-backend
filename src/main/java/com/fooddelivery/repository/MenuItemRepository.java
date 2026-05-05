@@ -21,7 +21,7 @@ public class MenuItemRepository {
             item.setItemId(rs.getLong("item_id"));
             item.setName(rs.getString("item_name"));
             item.setDescription(rs.getString("description"));
-            item.setPrice(rs.getDouble("price"));
+            item.setPrice(rs.getBigDecimal("price"));
             item.setRestaurantId(rs.getLong("restaurant_id"));
             return item;
         }

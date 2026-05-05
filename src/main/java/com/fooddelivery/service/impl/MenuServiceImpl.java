@@ -73,7 +73,7 @@ public class MenuServiceImpl implements MenuService {
         dto.setItemId(item.getItemId());
         dto.setName(item.getName());
         dto.setDescription(item.getDescription());
-        dto.setPrice(item.getPrice());
+        dto.setPrice(item.getPrice().doubleValue());
         dto.setRestaurantId(item.getRestaurantId());
         return dto;
     }
