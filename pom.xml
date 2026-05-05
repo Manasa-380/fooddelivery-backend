@@ -48,7 +48,11 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+<<<<<<< HEAD
 			<optional>true</optional>
+=======
+			<scope>provided</scope>
+>>>>>>> 07d23b6fe67222442503f39702d4273ed76dc2e9
 		</dependency>
 	</dependencies>
 
