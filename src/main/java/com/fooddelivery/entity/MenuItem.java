@@ -16,5 +16,5 @@ public class MenuItem {
     private BigDecimal price;
     private Long restaurantId;
     private boolean available;
-
+    private int quantity;
 }
