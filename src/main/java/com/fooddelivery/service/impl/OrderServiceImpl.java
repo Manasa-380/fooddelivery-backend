@@ -53,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
             throw new InvalidRequestException("Order must contain at least one item");
         }
 
-        // 1. Validate customer exists (CustomerService expects int)
+        // 1. Validate customer exists
         customerService.getCustomerById(dto.getCustomerId());
 
         BigDecimal totalAmount = BigDecimal.ZERO;
