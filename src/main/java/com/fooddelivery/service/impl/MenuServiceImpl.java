@@ -23,6 +23,7 @@ public class MenuServiceImpl implements MenuService {
         item.setDescription(dto.getDescription());
         item.setPrice(dto.getPrice());
         item.setRestaurantId(dto.getRestaurantId());
+        item.setAvailable(true);
         menuItemRepository.save(item);
     }
 
@@ -75,6 +76,7 @@ public class MenuServiceImpl implements MenuService {
         dto.setDescription(item.getDescription());
         dto.setPrice(item.getPrice().doubleValue());
         dto.setRestaurantId(item.getRestaurantId());
+        dto.setAvailable(item.isAvailable());
         return dto;
     }
 }

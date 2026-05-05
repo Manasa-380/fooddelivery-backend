@@ -2,6 +2,7 @@ package com.fooddelivery.repository;
 
 import com.fooddelivery.entity.MenuItem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -23,6 +24,7 @@ public class MenuItemRepository {
             item.setDescription(rs.getString("description"));
             item.setPrice(rs.getBigDecimal("price"));
             item.setRestaurantId(rs.getLong("restaurant_id"));
+            item.setAvailable(rs.getBoolean("is_available"));
             return item;
         }
     };
@@ -74,4 +76,41 @@ public class MenuItemRepository {
         jdbcTemplate.update(sql, status, itemId);
         System.out.println("Availability updated successfully!");
     }
+
+
+    // ✅ Lookup item_id + price by item_name & restaurant_id
+    public MenuItem findMenuItemByName(String itemName, Long restaurantId) {
+        return jdbcTemplate.queryForObject(
+                "SELECT item_id AS itemId, item_name AS Name, price, quantity " +
+                        "FROM menu_items WHERE item_name = ? AND restaurant_id = ?",
+                new BeanPropertyRowMapper<>(MenuItem.class),
+                itemName,
+                restaurantId
+        );
+    }
+
+    public List<MenuItem> findAllAvailableItemsByRestaurant(Long restaurantId) {
+        return jdbcTemplate.query(
+                "SELECT item_id AS itemId, item_name AS Name, price, quantity " +
+                        "FROM menu_items " +
+                        "WHERE restaurant_id = ? AND is_available = TRUE AND quantity > 0",
+                new BeanPropertyRowMapper<>(MenuItem.class),
+                restaurantId
+        );
+    }
+
+    public void reduceQuantity(Long itemId, int orderedQty) {
+
+        jdbcTemplate.update(
+                "UPDATE menu_items " +
+                        "SET quantity = quantity - ?, " +
+                        "    is_available = CASE WHEN quantity - ? <= 0 THEN FALSE ELSE TRUE END " +
+                        "WHERE item_id = ? AND quantity >= ?",
+                orderedQty,
+                orderedQty,
+                itemId,
+                orderedQty
+        );
+    }
+
 }

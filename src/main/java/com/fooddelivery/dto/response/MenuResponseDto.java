@@ -1,13 +1,14 @@
 package com.fooddelivery.dto.response;
 
 import lombok.Data;
+import java.math.BigDecimal;
 
 @Data
 public class MenuResponseDto {
     private Long itemId;
     private String name;
     private String description;
-    private double price;
+    private BigDecimal price;
     private Long restaurantId;
     private boolean isAvailable;
 }

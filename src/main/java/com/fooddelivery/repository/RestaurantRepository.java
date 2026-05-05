@@ -61,4 +61,15 @@ public class RestaurantRepository {
         jdbcTemplate.update(sql, restaurantId);
         System.out.println("Restaurant deleted successfully!");
     }
+
+
+    // ✅ Lookup restaurant_id by restaurant_name
+    public Long findRestaurantIdByName(String restaurantName) {
+        return jdbcTemplate.queryForObject(
+                "SELECT restaurant_id FROM restaurants WHERE restaurant_name = ?",
+                Long.class,
+                restaurantName
+        );
+    }
+
 }
