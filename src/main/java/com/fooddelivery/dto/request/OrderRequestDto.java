@@ -31,5 +31,4 @@ public class OrderRequestDto {
     public void setItems(List<OrderItemRequestDto> items) {
         this.items = items;
     }
-    // getters and setters
 }

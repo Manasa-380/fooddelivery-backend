@@ -69,5 +69,17 @@ public class OrderResponseDto {
     public void setItems(List<OrderItemResponseDto> items) {
         this.items = items;
     }
-    // getters and setters
+
+    @Override
+    public String toString() {
+        return "OrderResponseDto{" +
+                "orderId=" + orderId +
+                ", customerId=" + customerId +
+                ", restaurantId=" + restaurantId +
+                ", status='" + status + '\'' +
+                ", totalAmount=" + totalAmount +
+                ", orderTime=" + orderTime +
+                ", items=" + items +
+                '}';
+    }
 }
