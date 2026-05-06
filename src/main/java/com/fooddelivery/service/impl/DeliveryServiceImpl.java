@@ -10,6 +10,8 @@ import com.fooddelivery.repository.DeliveryRepository;
 import com.fooddelivery.service.DeliveryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -72,11 +74,19 @@ public class DeliveryServiceImpl implements DeliveryService {
         // ✅ fetch saved delivery
         Delivery savedDelivery = deliveryRepository.findByOrderId(dto.getOrderId());
 
+//        return new DeliveryResponseDto(
+//                savedDelivery.getDeliveryId(),
+//                savedDelivery.getStatus(),
+//                savedDelivery.getEta()
+//        );
+
         return new DeliveryResponseDto(
-                savedDelivery.getDeliveryId(),
-                savedDelivery.getStatus(),
-                savedDelivery.getEta()
+                delivery.getDeliveryId(),
+                delivery.getOrderId(),
+                delivery.getStatus(),
+                delivery.getEta()
         );
+
     }
     @Override
     public DeliveryResponseDto getDeliveryByOrderId(Long orderId) {
@@ -86,11 +96,20 @@ public class DeliveryServiceImpl implements DeliveryService {
             throw new ResourceNotFoundException("Delivery not found for order");
         }
 
+//        return new DeliveryResponseDto(
+//                delivery.getDeliveryId(),
+//                delivery.getStatus(),
+//                delivery.getEta()
+//        );
+
+
         return new DeliveryResponseDto(
                 delivery.getDeliveryId(),
+                delivery.getOrderId(),
                 delivery.getStatus(),
                 delivery.getEta()
         );
+
     }
 
     @Override
@@ -110,6 +129,23 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
 
+    @Override
+    public List<DeliveryResponseDto> getDeliveriesByAgent(Long agentId) {
+        List<Delivery> deliveries = deliveryRepository.findByAgentId(agentId);
+
+        List<DeliveryResponseDto> result = new ArrayList<>();
+
+        for (Delivery d : deliveries) {
+            result.add(new DeliveryResponseDto(
+                    d.getDeliveryId(),
+                    d.getOrderId(),
+                    d.getStatus(),
+                    d.getEta()
+            ));
+        }
+
+        return result;
+    }
 
 
     @Override
@@ -145,16 +181,17 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         agentRepository.updateAgentStatus(agent.getAgentId(), "BUSY");
 
-        System.out.println("🔵 Agent now BUSY");
+        //System.out.println("🔵 Agent now BUSY");
 
-        System.out.println(
+
+        waitSeconds(10,
                 "✅ Your delivery will be taken care by "
                         + agent.getAgentName()
                         + " and ETA is " + delivery.getEta()
         );
 
         // 3️⃣ Order preparation (10 seconds)
-        waitSeconds(10, "⏳ Preparing your order...");
+        waitSeconds(20, "⏳ Preparing your order...");
 
         deliveryRepository.updateStatus(deliveryId, "PICKED_UP");
        // deliveryRepository.updateStatus(delivery.getDeliveryId(), "PICKED_UP");
@@ -182,4 +219,5 @@ public class DeliveryServiceImpl implements DeliveryService {
             Thread.currentThread().interrupt();
         }
     }
+
 }

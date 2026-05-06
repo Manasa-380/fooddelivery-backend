@@ -81,7 +81,7 @@ public class MenuItemRepository {
     // ✅ Lookup item_id + price by item_name & restaurant_id
     public MenuItem findMenuItemByName(String itemName, Long restaurantId) {
         return jdbcTemplate.queryForObject(
-                "SELECT item_id AS itemId, item_name AS Name, price, quantity " +
+                "SELECT item_id AS itemId, item_name AS name, price, quantity " +
                         "FROM menu_items WHERE item_name = ? AND restaurant_id = ?",
                 new BeanPropertyRowMapper<>(MenuItem.class),
                 itemName,
@@ -91,7 +91,7 @@ public class MenuItemRepository {
 
     public List<MenuItem> findAllAvailableItemsByRestaurant(Long restaurantId) {
         return jdbcTemplate.query(
-                "SELECT item_id AS itemId, item_name AS Name, price, quantity " +
+                "SELECT item_id AS itemId, item_name AS name, price, quantity " +
                         "FROM menu_items " +
                         "WHERE restaurant_id = ? AND is_available = TRUE AND quantity > 0",
                 new BeanPropertyRowMapper<>(MenuItem.class),

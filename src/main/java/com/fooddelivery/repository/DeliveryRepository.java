@@ -3,7 +3,8 @@ package com.fooddelivery.repository;
 import com.fooddelivery.entity.Delivery;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
+import java.util.List;
+import java.util.ArrayList;
 import static org.springframework.boot.env.RandomValuePropertySourceEnvironmentPostProcessor.ORDER;
 
 @Repository
@@ -51,5 +52,19 @@ public class DeliveryRepository {
     public void updateStatus(Long deliveryId, String delivery_status) {
         String sql = "UPDATE deliveries SET delivery_status = ? WHERE delivery_id = ?";
         jdbcTemplate.update(sql, delivery_status, deliveryId);
+    }
+    public List<Delivery> findByAgentId(Long agentId) {
+
+        String sql = "SELECT * FROM deliveries WHERE agent_id = ?";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Delivery d = new Delivery();
+            d.setDeliveryId(rs.getLong("delivery_id"));
+            d.setOrderId(rs.getLong("order_id"));
+            d.setAgentId(rs.getLong("agent_id"));
+            d.setStatus(rs.getString("delivery_status"));
+            d.setEta(rs.getTimestamp("eta").toLocalDateTime());
+            return d;
+        }, agentId);
     }
 }

@@ -72,5 +72,13 @@ public class RestaurantRepository {
                 restaurantName
         );
     }
+    public Restaurant findByUserId(Long userId) {
+        String sql = "SELECT * FROM restaurants WHERE user_id = ?";
+
+        List<Restaurant> list = jdbcTemplate.query(sql, rowMapper, userId);
+
+        return list.isEmpty() ? null : list.get(0);
+    }
+
 
 }
