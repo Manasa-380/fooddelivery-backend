@@ -1,19 +1,17 @@
 package com.fooddelivery.service;
-import com.fooddelivery.dto.request.RegisterRequestDto;
-import com.fooddelivery.entity.Agent;
+
+import com.fooddelivery.dto.request.DeliveryRequestDto;
 import com.fooddelivery.dto.response.DeliveryResponseDto;
+import com.fooddelivery.entity.Agent;
 
 public interface DeliveryService {
-
-    //  For login to work (User + Agent creation)
-   // void registerAgent(RegisterRequestDto dto);
-
-    //  Pure delivery domain operations
-    //void createAgent(Agent agent);
+    void createAgent(Agent agent);
     Agent getAgentByUserId(Long userId);
 
-    void assignDelivery(Long orderId);
+    DeliveryResponseDto assignDelivery(DeliveryRequestDto deliveryRequestDto);
+
     DeliveryResponseDto getDeliveryByOrderId(Long orderId);
+    void processDeliveryAfterPayment(Long orderId, String customerName);
     void updateDeliveryStatus(Long deliveryId, String status);
 
     String getDeliveryStatusByOrderId(Long orderId);

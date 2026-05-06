@@ -5,6 +5,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class AgentRepository {
 
@@ -22,12 +24,12 @@ public class AgentRepository {
                     rs.getString("contact_number"),
                     rs.getString("agent_status")
             );
-
     public void save(Agent agent) {
         String sql = """
-            INSERT INTO agents (user_id, agent_name, contact_number, agent_status)
-            VALUES (?, ?, ?, ?)
-        """;
+                INSERT INTO agents
+                (user_id, agent_name, contact_number, agent_status)
+                VALUES (?, ?, ?, ?)
+                """;
 
         jdbcTemplate.update(sql,
                 agent.getUserId(),
@@ -37,15 +39,33 @@ public class AgentRepository {
         );
     }
 
-    public Agent findAvailableAgent() {
-        String sql = "SELECT * FROM agents WHERE agent_status = 'AVAILABLE' LIMIT 1";
-        return jdbcTemplate.query(sql, AGENT_ROW_MAPPER)
-                .stream().findFirst().orElse(null);
+    //------------
+    public Optional<Agent> findFirstByAgentStatus(String status) {
+
+        String sql = """
+        SELECT * FROM agents
+        WHERE agent_status = ?
+        LIMIT 1
+    """;
+
+        return jdbcTemplate
+                .query(sql, AGENT_ROW_MAPPER, status)
+                .stream()
+                .findFirst();
     }
+
+    //--------------------
 
     public Agent findByUserId(Long userId) {
         String sql = "SELECT * FROM agents WHERE user_id = ?";
-        return jdbcTemplate.queryForObject(sql, AGENT_ROW_MAPPER, userId);
+        return jdbcTemplate.query(sql, AGENT_ROW_MAPPER, userId)
+                .stream().findFirst().orElse(null);
+    }
+
+    public Agent findByAgentId(Long agentId) {
+        String sql = "SELECT * FROM agents WHERE agent_id = ?";
+        return jdbcTemplate.query(sql, AGENT_ROW_MAPPER, agentId)
+                .stream().findFirst().orElse(null);
     }
 
     public void updateAgentStatus(Long agentId, String status) {

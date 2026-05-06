@@ -54,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // 1. Validate customer exists (CustomerService expects int)
-        customerService.getCustomerById(dto.getCustomerId().intValue());
+        customerService.getCustomerById(dto.getCustomerId());
 
         BigDecimal totalAmount = BigDecimal.ZERO;
 

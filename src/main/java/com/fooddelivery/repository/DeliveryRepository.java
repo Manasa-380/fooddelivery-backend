@@ -4,6 +4,8 @@ import com.fooddelivery.entity.Delivery;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import static org.springframework.boot.env.RandomValuePropertySourceEnvironmentPostProcessor.ORDER;
+
 @Repository
 public class DeliveryRepository {
 
@@ -25,11 +27,12 @@ public class DeliveryRepository {
                 delivery.getAgentId(),
                 delivery.getStatus(),
                 delivery.getEta()
+
         );
     }
 
     public Delivery findByOrderId(Long orderId) {
-        String sql = "SELECT * FROM deliveries WHERE order_id = ?";
+        String sql = "SELECT * FROM deliveries WHERE order_id = ? ORDER BY delivery_id DESC LIMIT 1;";
 
         return jdbcTemplate.query(sql, rs -> {
             if (rs.next()) {
@@ -37,7 +40,7 @@ public class DeliveryRepository {
                 d.setDeliveryId(rs.getLong("delivery_id"));
                 d.setOrderId(rs.getLong("order_id"));
                 d.setAgentId(rs.getLong("agent_id"));
-                d.setStatus(rs.getString("agent_status"));
+                d.setStatus(rs.getString("delivery_status"));
                 d.setEta(rs.getTimestamp("eta").toLocalDateTime());
                 return d;
             }
@@ -45,8 +48,8 @@ public class DeliveryRepository {
         }, orderId);
     }
 
-    public void updateStatus(Long deliveryId, String status) {
-        String sql = "UPDATE delivery SET status = ? WHERE delivery_id = ?";
-        jdbcTemplate.update(sql, status, deliveryId);
+    public void updateStatus(Long deliveryId, String delivery_status) {
+        String sql = "UPDATE deliveries SET delivery_status = ? WHERE delivery_id = ?";
+        jdbcTemplate.update(sql, delivery_status, deliveryId);
     }
 }
