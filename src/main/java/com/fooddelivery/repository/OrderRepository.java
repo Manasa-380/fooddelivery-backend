@@ -1,6 +1,7 @@
 package com.fooddelivery.repository;
 
 import com.fooddelivery.entity.Order;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,17 +12,27 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 
+/**
+ * Repository class for handling database operations related to orders.
+ *
+ * <p>Uses JdbcTemplate to perform CRUD operations on the
+ * {@code orders} table.</p>
+ */
 @Repository
 public class OrderRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    // Constructor injection
     public OrderRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // ✅ Save order and return generated orderId
+    /**
+     * Saves a new order into the database and returns the generated order ID.
+     *
+     * @param order Order entity containing order details
+     * @return generated order ID
+     */
     public Long save(Order order) {
 
         String sql = """
@@ -47,16 +58,30 @@ public class OrderRepository {
         return keyHolder.getKey().longValue();
     }
 
-    // Find order by ID
+    /**
+     * Retrieves an order by its ID.
+     *
+     * @param orderId order ID
+     * @return Order entity if found, otherwise null
+     */
     public Order findById(Long orderId) {
-        return jdbcTemplate.queryForObject(
-                "SELECT * FROM orders WHERE order_id = ?",
-                new BeanPropertyRowMapper<>(Order.class),
-                orderId
-        );
+        try {
+            return jdbcTemplate.queryForObject(
+                    "SELECT * FROM orders WHERE order_id = ?",
+                    new BeanPropertyRowMapper<>(Order.class),
+                    orderId
+            );
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 
-    // Find orders by customer
+    /**
+     * Retrieves all orders placed by a customer.
+     *
+     * @param customerId customer ID
+     * @return list of orders
+     */
     public List<Order> findByCustomerId(Long customerId) {
         return jdbcTemplate.query(
                 "SELECT * FROM orders WHERE customer_id = ?",
@@ -65,7 +90,12 @@ public class OrderRepository {
         );
     }
 
-    // Update order status
+    /**
+     * Updates order status.
+     *
+     * @param orderId order ID
+     * @param status new status
+     */
     public void updateStatus(Long orderId, String status) {
         jdbcTemplate.update(
                 "UPDATE orders SET order_status = ? WHERE order_id = ?",
