@@ -1,10 +1,10 @@
-package com.fooddelivery.service.impl;
+package com.service.impl;
 
-import com.fooddelivery.dto.request.PaymentRequestDto;
-import com.fooddelivery.dto.response.PaymentResponseDto;
-import com.fooddelivery.entity.Payment;
-import com.fooddelivery.repository.PaymentRepository;
-import com.fooddelivery.service.PaymentService;
+import com.dto.request.PaymentRequestDto;
+import com.dto.response.PaymentResponseDto;
+import com.entity.Payment;
+import com.repository.PaymentRepository;
+import com.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

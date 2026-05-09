@@ -1,10 +1,10 @@
-package com.fooddelivery.service.impl;
+package com.service.impl;
 
-import com.fooddelivery.entity.User;
-import com.fooddelivery.exception.AuthenticationException;
-import com.fooddelivery.exception.InvalidRequestException;
-import com.fooddelivery.repository.UserRepository;
-import com.fooddelivery.service.AuthService;
+import com.entity.User;
+import com.exception.AuthenticationException;
+import com.exception.InvalidRequestException;
+import com.repository.UserRepository;
+import com.service.AuthService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 

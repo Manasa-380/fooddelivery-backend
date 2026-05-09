@@ -1,7 +1,7 @@
-package com.fooddelivery.service;
+package com.service;
 
-import com.fooddelivery.dto.request.OrderRequestDto;
-import com.fooddelivery.dto.response.OrderResponseDto;
+import com.dto.request.OrderRequestDto;
+import com.dto.response.OrderResponseDto;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
-package com.fooddelivery.repository;
+package com.repository;
 
-import com.fooddelivery.entity.OrderDetails;
+import com.entity.OrderDetails;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

@@ -1,4 +1,4 @@
-package com.fooddelivery.entity;
+package com.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

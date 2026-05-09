@@ -1,4 +1,4 @@
-package com.fooddelivery.dto.response;
+package com.dto.response;
 
 import lombok.Data;
 import java.math.BigDecimal;

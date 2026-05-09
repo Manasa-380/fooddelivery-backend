@@ -1,6 +1,6 @@
-package com.fooddelivery.repository;
+package com.repository;
 
-import com.fooddelivery.entity.Restaurant;
+import com.entity.Restaurant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

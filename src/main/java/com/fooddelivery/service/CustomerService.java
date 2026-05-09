@@ -1,6 +1,6 @@
-package com.fooddelivery.service;
+package com.service;
 
-import com.fooddelivery.entity.Customer;
+import com.entity.Customer;
 
 public interface CustomerService {
 

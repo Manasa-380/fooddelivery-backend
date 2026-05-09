@@ -1,4 +1,4 @@
-package com.fooddelivery.dto.response;
+package com.dto.response;
 
 import java.math.BigDecimal;
 

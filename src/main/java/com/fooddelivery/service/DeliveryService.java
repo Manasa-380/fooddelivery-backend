@@ -1,8 +1,9 @@
-package com.fooddelivery.service;
+package com.service;
 
-import com.fooddelivery.dto.request.DeliveryRequestDto;
-import com.fooddelivery.dto.response.DeliveryResponseDto;
-import com.fooddelivery.entity.Agent;
+import com.dto.request.DeliveryRequestDto;
+import com.dto.response.DeliveryResponseDto;
+import com.entity.Agent;
+
 import java.util.List;
 public interface DeliveryService {
     void createAgent(Agent agent);

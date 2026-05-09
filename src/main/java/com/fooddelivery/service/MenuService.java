@@ -1,7 +1,7 @@
-package com.fooddelivery.service;
+package com.service;
 
-import com.fooddelivery.dto.request.MenuRequestDto;
-import com.fooddelivery.dto.response.MenuResponseDto;
+import com.dto.request.MenuRequestDto;
+import com.dto.response.MenuResponseDto;
 import java.util.List;
 
 public interface MenuService {

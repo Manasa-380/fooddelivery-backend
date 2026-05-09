@@ -1,6 +1,6 @@
-package com.fooddelivery.repository;
+package com.repository;
 
-import com.fooddelivery.entity.MenuItem;
+import com.entity.MenuItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
