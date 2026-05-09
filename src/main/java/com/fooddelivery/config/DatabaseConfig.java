@@ -1,4 +1,4 @@
-package com.config;
+package com.fooddelivery.config;
 
 public class DatabaseConfig {
 }

@@ -1,6 +1,6 @@
-package com.repository;
+package com.fooddelivery.repository;
 
-import com.entity.Order;
+import com.fooddelivery.entity.Order;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

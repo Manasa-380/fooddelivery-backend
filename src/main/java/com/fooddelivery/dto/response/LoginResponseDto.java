@@ -1,4 +1,4 @@
-package com.dto.response;
+package com.fooddelivery.dto.response;
 
 public class LoginResponseDto {
 }

@@ -1,6 +1,6 @@
-package com.service;
+package com.fooddelivery.service;
 
-import com.entity.User;
+import com.fooddelivery.entity.User;
 
 public interface AuthService {
 

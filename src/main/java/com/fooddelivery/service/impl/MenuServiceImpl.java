@@ -1,10 +1,10 @@
-package com.service.impl;
+package com.fooddelivery.service.impl;
 
-import com.dto.request.MenuRequestDto;
-import com.dto.response.MenuResponseDto;
-import com.entity.MenuItem;
-import com.repository.MenuItemRepository;
-import com.service.MenuService;
+import com.fooddelivery.dto.request.MenuRequestDto;
+import com.fooddelivery.dto.response.MenuResponseDto;
+import com.fooddelivery.entity.MenuItem;
+import com.fooddelivery.repository.MenuItemRepository;
+import com.fooddelivery.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;

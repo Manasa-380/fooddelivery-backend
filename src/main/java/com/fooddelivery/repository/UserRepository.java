@@ -1,5 +1,5 @@
-package com.repository;
-import com.entity.User;
+package com.fooddelivery.repository;
+import com.fooddelivery.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

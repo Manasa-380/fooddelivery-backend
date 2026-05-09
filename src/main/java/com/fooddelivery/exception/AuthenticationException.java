@@ -1,4 +1,4 @@
-package com.exception;
+package com.fooddelivery.exception;
 
 public class AuthenticationException extends RuntimeException {
 

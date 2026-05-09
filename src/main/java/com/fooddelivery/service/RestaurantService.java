@@ -1,6 +1,6 @@
-package com.service;
+package com.fooddelivery.service;
 
-import com.entity.Restaurant;
+import com.fooddelivery.entity.Restaurant;
 import java.util.List;
 
 public interface RestaurantService {
