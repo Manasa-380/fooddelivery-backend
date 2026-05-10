@@ -108,9 +108,18 @@ public class DeliveryRepository {
     public void updateStatus(Long deliveryId, String deliveryStatus) {
 
         try {
-            String sql = "UPDATE deliveries SET delivery_status = ? WHERE delivery_id = ?";
+            String sql;
 
-            jdbcTemplate.update(sql, deliveryStatus, deliveryId);
+            if ("DELIVERED".equalsIgnoreCase(deliveryStatus)) {
+                sql = "UPDATE deliveries SET delivery_status = ?, delivered_at = CURRENT_TIMESTAMP WHERE delivery_id = ?";
+                jdbcTemplate.update(sql, deliveryStatus, deliveryId);
+            }
+            else {
+                sql = "UPDATE deliveries set delivery_status=? where delivery_id=?";
+
+
+                jdbcTemplate.update(sql, deliveryStatus, deliveryId);
+            }
 
             log.info("Delivery status updated successfully!");
 
