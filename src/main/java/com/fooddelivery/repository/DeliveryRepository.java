@@ -162,4 +162,35 @@ public class DeliveryRepository {
 
         return deliveries;
     }
+
+
+
+/**
+ * Retrieves the order ID associated with a given delivery ID.
+ *
+ * <p>This method queries the {@code deliveries} table to obtain the
+ * {@code order_id} linked to the specified {@code delivery_id}.
+ * It is typically used to synchronize order status updates when a
+ * delivery reaches a final state (e.g., DELIVERED).</p>
+ *
+ * <p>SQL used:</p>
+ * <pre>
+ * SELECT order_id FROM deliveries WHERE delivery_id = ?
+ * </pre>
+ *
+ * @param deliveryId the unique identifier of the delivery
+ * @return the associated order ID if found; {@code null} if no matching
+ *         delivery exists or if an error occurs
+ */
+
+
+ public Long findOrderIdByDeliveryId(Long deliveryId) {
+        try {
+            String sql = "SELECT order_id FROM deliveries WHERE delivery_id = ?";
+            return jdbcTemplate.queryForObject(sql, Long.class, deliveryId);
+        } catch (Exception e) {
+            log.info("Error fetching orderId for deliveryId {}: {}", deliveryId, e.getMessage());
+            return null;
+        }
+    }
 }

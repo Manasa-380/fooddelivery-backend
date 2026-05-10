@@ -7,6 +7,7 @@ import com.fooddelivery.entity.Delivery;
 import com.fooddelivery.exception.ResourceNotFoundException;
 import com.fooddelivery.repository.AgentRepository;
 import com.fooddelivery.repository.DeliveryRepository;
+import com.fooddelivery.repository.OrderRepository;
 import com.fooddelivery.service.DeliveryService;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
@@ -24,11 +25,13 @@ public class DeliveryServiceImpl implements DeliveryService {
             LoggerFactory.getLogger(DeliveryServiceImpl.class);
     private final AgentRepository agentRepository;
     private final DeliveryRepository deliveryRepository;
+    private final OrderRepository orderRepository;
 
     public DeliveryServiceImpl(AgentRepository agentRepository,
-                               DeliveryRepository deliveryRepository) {
+                               DeliveryRepository deliveryRepository,OrderRepository orderRepository) {
         this.agentRepository = agentRepository;
         this.deliveryRepository = deliveryRepository;
+        this.orderRepository= orderRepository;
     }
 
     // ================= AGENT =================
@@ -105,6 +108,19 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     public void updateDeliveryStatus(Long deliveryId, String status) {
         deliveryRepository.updateStatus(deliveryId, status);
+
+
+
+        // 2 If delivered → update order table
+        if ("DELIVERED".equalsIgnoreCase(status)) {
+
+            Long orderId = deliveryRepository.findOrderIdByDeliveryId(deliveryId);
+
+            if (orderId != null) {
+                orderRepository.updateStatus(orderId, "DELIVERED");
+            }
+        }
+
     }
 
     @Override
@@ -201,7 +217,11 @@ public class DeliveryServiceImpl implements DeliveryService {
         waitSeconds(4);
 
         // Delivered
-        deliveryRepository.updateStatus(deliveryId, "DELIVERED");
+        //deliveryRepository.updateStatus(deliveryId, "DELIVERED");
+
+
+        updateDeliveryStatus(deliveryId, "DELIVERED");
+
         agentRepository.updateAgentStatus(agent.getAgentId(), "AVAILABLE");
 
         printDeliveryStep("Delivered",
