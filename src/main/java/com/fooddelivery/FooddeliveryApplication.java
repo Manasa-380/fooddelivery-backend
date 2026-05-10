@@ -1125,6 +1125,22 @@ public class FooddeliveryApplication implements CommandLineRunner {
     private void placeOrder(Scanner scanner, Customer customer) {
         log.info("\n===== PLACE ORDER =====");
 
+
+
+        List<Restaurant> restaurants = restaurantService.getAllRestaurants();
+
+        if (restaurants.isEmpty()) {
+            log.warn("No restaurants available right now.");
+            return;
+        }
+
+        log.info("--- Available Restaurants ---");
+        restaurants.forEach(r ->
+                log.info("- {}", r.getRestaurantName())
+        );
+
+
+
         System.out.print("Enter restaurant name: ");
         String restaurantName = scanner.nextLine();
 
