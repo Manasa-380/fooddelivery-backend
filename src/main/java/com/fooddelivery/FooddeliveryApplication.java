@@ -44,17 +44,17 @@ public class FooddeliveryApplication implements CommandLineRunner {
         boolean running = true;
 
         while (running) {
-            System.out.println("\n===== FOOD DELIVERY SYSTEM =====");
-            System.out.println("1. Register");
-            System.out.println("2. Login");
-            System.out.println("3. Exit");
+            log.info("\n===== FOOD DELIVERY SYSTEM =====");
+            log.info("1. Register");
+            log.info("2. Login");
+            log.info("3. Exit");
             System.out.print("Enter choice: ");
 
             int choice;
             try {
                 choice = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input");
+                log.info("Invalid input");
                 continue;
             }
 
@@ -62,10 +62,10 @@ public class FooddeliveryApplication implements CommandLineRunner {
                 case 1 -> register(scanner);
                 case 2 -> login(scanner);
                 case 3 -> {
-                    System.out.println("👋 Exiting application...");
+                    log.info("👋 Exiting application...");
                     running = false;
                 }
-                default -> System.out.println("Invalid option");
+                default -> log.info("Invalid option");
             }
         }
 
@@ -76,14 +76,14 @@ public class FooddeliveryApplication implements CommandLineRunner {
     private void register(Scanner scanner) {
 
         try {
-            System.out.println("\n===== USER REGISTRATION =====");
+            log.info("\n===== USER REGISTRATION =====");
 
             User user = new User();
 
             System.out.print("Email: ");
             user.setEmail(scanner.nextLine().trim());
 
-            System.out.println(
+            log.info(
                     "Password must be:\n" +
                             "- At least 8 characters\n" +
                             "- Contain one special character (!@#$%^&*)"
@@ -96,7 +96,7 @@ public class FooddeliveryApplication implements CommandLineRunner {
             user.setRole(role);
 
             User savedUser = authService.register(user);
-            System.out.println("User registered successfully");
+            log.info("User registered successfully");
 
             // -------- ROLE‑BASED PROFILE CREATION --------
 
@@ -109,19 +109,19 @@ public class FooddeliveryApplication implements CommandLineRunner {
             else if ("AGENT".equals(role)) {
                 createAgent(scanner, savedUser);
             } else {
-                System.out.println("Unknown role, profile not created");
+                log.info("Unknown role, profile not created");
             }
 
         } catch (InvalidRequestException e) {
-            System.out.println("Registration failed: " + e.getMessage());
-            System.out.println("Please try again.");
+            log.info("Registration failed: " + e.getMessage());
+            log.info("Please try again.");
         } catch (Exception e) {
-            System.out.println("Unexpected error: " + e.getMessage());
+            log.info("Unexpected error: " + e.getMessage());
         }
     }
 
     private void createCustomer(Scanner scanner, User user) {
-        System.out.println("\n===== CUSTOMER DETAILS =====");
+        log.info("\n===== CUSTOMER DETAILS =====");
 
         Customer customer = new Customer();
         System.out.print("Name: ");
@@ -136,11 +136,11 @@ public class FooddeliveryApplication implements CommandLineRunner {
         customer.setUserId(user.getUserId());
         customerService.createCustomer(customer);
 
-        System.out.println("Customer profile created");
+        log.info("Customer profile created");
     }
 
     private void createRestaurant(Scanner scanner, User user) {
-        System.out.println("\n===== RESTAURANT DETAILS =====");
+        log.info("\n===== RESTAURANT DETAILS =====");
 
         Restaurant restaurant = new Restaurant();
         System.out.print("Restaurant name: ");
@@ -155,11 +155,11 @@ public class FooddeliveryApplication implements CommandLineRunner {
         restaurant.setUserId(user.getUserId());
         restaurantService.registerRestaurant(restaurant);
 
-        System.out.println("Restaurant profile created");
+        log.info("Restaurant profile created");
     }
 
     private void createAgent(Scanner scanner, User user) {
-        System.out.println("\n===== AGENT DETAILS =====");
+        log.info("\n===== AGENT DETAILS =====");
 
         Agent agent = new Agent();
         System.out.print("Agent name: ");
@@ -171,14 +171,14 @@ public class FooddeliveryApplication implements CommandLineRunner {
         agent.setUserId(user.getUserId());
         deliveryService.createAgent(agent);
 
-        System.out.println("Agent profile created");
+        log.info("Agent profile created");
     }
 
     // ========================= LOGIN =========================
     private void login(Scanner scanner) {
 
         try {
-            System.out.println("\n===== USER LOGIN =====");
+            log.info("\n===== USER LOGIN =====");
 
             System.out.print("Email: ");
             String email = scanner.nextLine();
@@ -187,7 +187,7 @@ public class FooddeliveryApplication implements CommandLineRunner {
             String password = scanner.nextLine();
 
             User user = authService.login(email, password);
-            System.out.println("Logged in as " + user.getRole());
+            log.info("Logged in as " + user.getRole());
 
             // -------- ROLE‑BASED VIEW --------
 
@@ -195,34 +195,34 @@ public class FooddeliveryApplication implements CommandLineRunner {
                 Customer customer =
                         customerService.getCustomerByUserId(user.getUserId());
 
-                System.out.println("\n===== CUSTOMER DETAILS =====");
-                System.out.println("Name    : " + customer.getCustomerName());
-                System.out.println("Phone   : " + customer.getPhone());
-                System.out.println("Address : " + customer.getAddress());
+                log.info("\n===== CUSTOMER DETAILS =====");
+                log.info("Name    : " + customer.getCustomerName());
+                log.info("Phone   : " + customer.getPhone());
+                log.info("Address : " + customer.getAddress());
             }
 
             else if ("RESTAURANT_OWNER".equals(user.getRole())) {
                 Restaurant restaurant =
                         restaurantService.getByUserId(user.getUserId());
 
-                System.out.println("\n===== RESTAURANT DETAILS =====");
-                System.out.println("Name     : " + restaurant.getRestaurantName());
-                System.out.println("Location : " + restaurant.getLocation());
-                System.out.println("Contact  : " + restaurant.getContactNumber());
+                log.info("\n===== RESTAURANT DETAILS =====");
+                log.info("Name     : " + restaurant.getRestaurantName());
+                log.info("Location : " + restaurant.getLocation());
+                log.info("Contact  : " + restaurant.getContactNumber());
             }
 
             else if ("AGENT".equals(user.getRole())) {
                 Agent agent =
                         deliveryService.getAgentByUserId(user.getUserId());
 
-                System.out.println("\n===== AGENT DETAILS =====");
-                System.out.println("Name    : " + agent.getAgentName());
-                System.out.println("Phone   : " + agent.getContactNumber());
-                System.out.println("Status  : " + agent.getAgentStatus());
+                log.info("\n===== AGENT DETAILS =====");
+                log.info("Name    : " + agent.getAgentName());
+                log.info("Phone   : " + agent.getContactNumber());
+                log.info("Status  : " + agent.getAgentStatus());
             }
 
         } catch (Exception e) {
-            System.out.println("Login failed: " + e.getMessage());
+            log.info("Login failed: " + e.getMessage());
         }
     }
 }*/
@@ -259,24 +259,24 @@ public class FooddeliveryApplication {
 			Scanner sc = new Scanner(System.in);
 			int choice;
 			do {
-				System.out.println("\n===== FOOD DELIVERY SYSTEM =====");
-				System.out.println("-- Restaurant Operations --");
-				System.out.println("1. Register Restaurant");
-				System.out.println("2. View All Restaurants");
-				System.out.println("3. View Restaurant By ID");
-				System.out.println("4. Update Restaurant");
-				System.out.println("5. Delete Restaurant");
-				System.out.println("-- Menu Operations --");
-				System.out.println("6. Add Menu Item");
-				System.out.println("7. Update Menu Item");
-				System.out.println("8. Delete Menu Item");
-				System.out.println("9. Toggle Availability");
-				System.out.println("10. View Menu By Restaurant");
-				System.out.println("11. View Menu Item By ID");
-				System.out.println("-- Customer Operations --");
-				System.out.println("12. View All Available Items");
-				System.out.println("-- Exit --");
-				System.out.println("13. Exit");
+				log.info("\n===== FOOD DELIVERY SYSTEM =====");
+				log.info("-- Restaurant Operations --");
+				log.info("1. Register Restaurant");
+				log.info("2. View All Restaurants");
+				log.info("3. View Restaurant By ID");
+				log.info("4. Update Restaurant");
+				log.info("5. Delete Restaurant");
+				log.info("-- Menu Operations --");
+				log.info("6. Add Menu Item");
+				log.info("7. Update Menu Item");
+				log.info("8. Delete Menu Item");
+				log.info("9. Toggle Availability");
+				log.info("10. View Menu By Restaurant");
+				log.info("11. View Menu Item By ID");
+				log.info("-- Customer Operations --");
+				log.info("12. View All Available Items");
+				log.info("-- Exit --");
+				log.info("13. Exit");
 				System.out.print("Enter choice: ");
 				choice = sc.nextInt();
 				sc.nextLine();
@@ -300,8 +300,8 @@ public class FooddeliveryApplication {
 					case 2 -> {
 						List<Restaurant> list =
 								restaurantService.getAllRestaurants();
-						System.out.println("\n--- All Restaurants ---");
-						list.forEach(r -> System.out.println(
+						log.info("\n--- All Restaurants ---");
+						list.forEach(r -> log.info(
 								r.getRestaurantId() + " | " +
 										r.getRestaurantName() + " | " +
 										r.getLocation() + " | " +
@@ -313,7 +313,7 @@ public class FooddeliveryApplication {
 						Restaurant r =
 								restaurantService.getRestaurant(sc.nextLong());
 						sc.nextLine();
-						System.out.println(
+						log.info(
 								r.getRestaurantId() + " | " +
 										r.getRestaurantName() + " | " +
 										r.getLocation() + " | " +
@@ -391,8 +391,8 @@ public class FooddeliveryApplication {
 						List<MenuResponseDto> list =
 								menuService.getMenuByRestaurant(sc.nextLong());
 						sc.nextLine();
-						System.out.println("\n--- Menu Items ---");
-						list.forEach(i -> System.out.println(
+						log.info("\n--- Menu Items ---");
+						list.forEach(i -> log.info(
 								i.getItemId() + " | " +
 										i.getName() + " | Rs." +
 										i.getPrice()));
@@ -403,7 +403,7 @@ public class FooddeliveryApplication {
 						MenuResponseDto item =
 								menuService.getMenuItemById(sc.nextLong());
 						sc.nextLine();
-						System.out.println(
+						log.info(
 								item.getItemId() + " | " +
 										item.getName() + " | Rs." +
 										item.getPrice());
@@ -412,16 +412,16 @@ public class FooddeliveryApplication {
 					case 12 -> {
 						List<MenuResponseDto> list =
 								menuService.getAllAvailableItems();
-						System.out.println("\n--- All Available Items ---");
-						list.forEach(i -> System.out.println(
+						log.info("\n--- All Available Items ---");
+						list.forEach(i -> log.info(
 								i.getItemId() + " | " +
 										i.getName() + " | Rs." +
 										i.getPrice()));
 					}
 
-					case 13 -> System.out.println("Exiting... Bye!");
+					case 13 -> log.info("Exiting... Bye!");
 
-					default -> System.out.println("Invalid choice!");
+					default -> log.info("Invalid choice!");
 				}
 
 			} while (choice != 13);
@@ -476,7 +476,7 @@ public class FooddeliveryApplication {
 //
 //            Scanner scanner = new Scanner(System.in);
 //
-//            System.out.println("===== PLACE ORDER =====");
+//            log.info("===== PLACE ORDER =====");
 //
 //            // ✅ Customer name
 //            System.out.print("Enter your name: ");
@@ -491,12 +491,12 @@ public class FooddeliveryApplication {
 //                    restaurantRepository.findRestaurantIdByName(restaurantName);
 //
 //            // ✅ SHOW ONLY AVAILABLE ITEMS (quantity > 0)
-//            System.out.println("\nAvailable items:");
+//            log.info("\nAvailable items:");
 //            List<MenuItem> menuItems =
 //                    menuItemRepository.findAllAvailableItemsByRestaurant(restaurantId);
 //
 //            for (MenuItem m : menuItems) {
-//                System.out.println(
+//                log.info(
 //                        "- " + m.getName() +
 //                                " (₹" + m.getPrice() + ") – Available: " + m.getQuantity()
 //                );
@@ -520,7 +520,7 @@ public class FooddeliveryApplication {
 //
 //                // ✅ Block zero or negative quantity
 //                if (quantity <= 0) {
-//                    System.out.println("❌ Quantity must be greater than zero");
+//                    log.info("❌ Quantity must be greater than zero");
 //                    continue;
 //                }
 //
@@ -532,7 +532,7 @@ public class FooddeliveryApplication {
 //
 //                // ✅ Block out-of-stock
 //                if (remainingStock <= 0) {
-//                    System.out.println(
+//                    log.info(
 //                            "❌ " + menuItem.getName() + " is out of stock"
 //                    );
 //                    continue;
@@ -540,7 +540,7 @@ public class FooddeliveryApplication {
 //
 //                // ✅ Block over-ordering (cumulative)
 //                if (quantity > remainingStock) {
-//                    System.out.println(
+//                    log.info(
 //                            "❌ Only " + remainingStock +
 //                                    " quantity available for " + menuItem.getName()
 //                    );
@@ -572,9 +572,9 @@ public class FooddeliveryApplication {
 //
 //            OrderResponseDto response = orderService.placeOrder(request);
 //
-//            System.out.println("\n✅ ORDER PLACED SUCCESSFULLY");
-//            System.out.println("Order ID: " + response.getOrderId());
-//            System.out.println("Total: " + response.getTotalAmount());
+//            log.info("\n✅ ORDER PLACED SUCCESSFULLY");
+//            log.info("Order ID: " + response.getOrderId());
+//            log.info("Total: " + response.getTotalAmount());
 //        };
 //    }
 //}
@@ -609,11 +609,11 @@ public class FooddeliveryApplication {
 			boolean running = true;
 
 			while (running) {
-				System.out.println("\n===== PAYMENT MANAGEMENT =====");
-				System.out.println("1. Process Payment");
-				System.out.println("2. Get Payment by Order ID");
-				System.out.println("3. Check If Payment Successful");
-				System.out.println("4. Exit");
+				log.info("\n===== PAYMENT MANAGEMENT =====");
+				log.info("1. Process Payment");
+				log.info("2. Get Payment by Order ID");
+				log.info("3. Check If Payment Successful");
+				log.info("4. Exit");
 				System.out.print("Choose option: ");
 
 				int choice = scanner.nextInt();
@@ -638,8 +638,8 @@ public class FooddeliveryApplication {
 						PaymentResponseDto response =
 								paymentService.processPayment(request);
 
-						System.out.println("✅ Status  : " + response.getPaymentStatus());
-						System.out.println("✅ Message : " + response.getMessage());
+						log.info("✅ Status  : " + response.getPaymentStatus());
+						log.info("✅ Message : " + response.getMessage());
 					}
 
 					case 2 -> {
@@ -649,8 +649,8 @@ public class FooddeliveryApplication {
 						PaymentResponseDto fetch =
 								paymentService.getPaymentByOrderId(fetchId);
 
-						System.out.println("Payment ID : " + fetch.getPaymentId());
-						System.out.println("Status     : " + fetch.getPaymentStatus());
+						log.info("Payment ID : " + fetch.getPaymentId());
+						log.info("Status     : " + fetch.getPaymentStatus());
 					}
 
 					case 3 -> {
@@ -660,12 +660,12 @@ public class FooddeliveryApplication {
 						boolean success =
 								paymentService.isPaymentSuccessful(checkId);
 
-						System.out.println("Payment successful: " + success);
+						log.info("Payment successful: " + success);
 					}
 
 					case 4 -> running = false;
 
-					default -> System.out.println("❌ Invalid option");
+					default -> log.info("❌ Invalid option");
 				}
 			}
 			scanner.close();
@@ -697,14 +697,14 @@ import java.util.Scanner;
         @Bean
         CommandLineRunner testAutoDelivery(DeliveryService deliveryService) {
             return args -> {
-                System.out.println("✅ Starting delivery flow test...\n");
+                log.info("✅ Starting delivery flow test...\n");
 
                 deliveryService.processDeliveryAfterPayment(
                         1L,
                         "TestCustomer"
                 );
 
-                System.out.println("\n✅ Delivery flow test completed");
+                log.info("\n✅ Delivery flow test completed");
             };
         }
     }
@@ -719,7 +719,7 @@ import java.util.Scanner;
 
        return args -> {
 
-            System.out.println("✅ Starting delivery flow test...\n");
+            log.info("✅ Starting delivery flow test...\n");
 
             // ✅ QUICK TEST CALL
             deliveryService.processDeliveryAfterPayment(
@@ -727,7 +727,7 @@ import java.util.Scanner;
                     "TestCustomer"
             );
 
-            System.out.println("\n✅ Delivery flow test completed");
+            log.info("\n✅ Delivery flow test completed");
 
 
 
@@ -738,18 +738,18 @@ import java.util.Scanner;
 
             while (running) {
 
-                System.out.println("\n===== DELIVERY MODULE =====");
-                System.out.println("1. Assign Delivery");
-                System.out.println("2. Get Delivery Details by Order ID");
-                System.out.println("3. Update Delivery Status");
-                System.out.println("4. Exit");
+                log.info("\n===== DELIVERY MODULE =====");
+                log.info("1. Assign Delivery");
+                log.info("2. Get Delivery Details by Order ID");
+                log.info("3. Update Delivery Status");
+                log.info("4. Exit");
                 System.out.print("Choose option: ");
 
                 int choice;
                 try {
                     choice = Integer.parseInt(scanner.nextLine());
                 } catch (NumberFormatException e) {
-                    System.out.println("❌ Invalid input");
+                    log.info("❌ Invalid input");
                     continue;
                 }
 
@@ -769,10 +769,10 @@ import java.util.Scanner;
                             DeliveryResponseDto response =
                                     deliveryService.assignDelivery(dto);
 
-                            System.out.println("\n✅ DELIVERY ASSIGNED");
-                            System.out.println("Delivery ID: " + response.getDeliveryId());
-                            System.out.println("Status     : " + response.getAgentStatus());
-                            System.out.println("ETA        : " + response.getEta());
+                            log.info("\n✅ DELIVERY ASSIGNED");
+                            log.info("Delivery ID: " + response.getDeliveryId());
+                            log.info("Status     : " + response.getAgentStatus());
+                            log.info("ETA        : " + response.getEta());
                         }
 
                         case 2 -> {
@@ -782,10 +782,10 @@ import java.util.Scanner;
                             DeliveryResponseDto response =
                                     deliveryService.getDeliveryByOrderId(orderId);
 
-                            System.out.println("\n📦 DELIVERY DETAILS");
-                            System.out.println("Delivery ID: " + response.getDeliveryId());
-                            System.out.println("Status     : " + response.getAgentStatus());
-                            System.out.println("ETA        : " + response.getEta());
+                            log.info("\n📦 DELIVERY DETAILS");
+                            log.info("Delivery ID: " + response.getDeliveryId());
+                            log.info("Status     : " + response.getAgentStatus());
+                            log.info("ETA        : " + response.getEta());
                         }
 
                         case 3 -> {
@@ -799,19 +799,19 @@ import java.util.Scanner;
 
                             deliveryService.updateDeliveryStatus(deliveryId, status);
 
-                            System.out.println("\n✅ DELIVERY STATUS UPDATED");
+                            log.info("\n✅ DELIVERY STATUS UPDATED");
                         }
 
                         case 4 -> {
-                            System.out.println("👋 Exiting Delivery Module...");
+                            log.info("👋 Exiting Delivery Module...");
                             running = false;
                         }
 
-                        default -> System.out.println("❌ Invalid option");
+                        default -> log.info("❌ Invalid option");
                     }
 
                 } catch (Exception e) {
-                    System.out.println("❌ Error: " + e.getMessage());
+                    log.info("❌ Error: " + e.getMessage());
                 }
             }
         };
@@ -823,7 +823,6 @@ import java.util.Scanner;
 
 package com.fooddelivery;
 
-import com.fooddelivery.dto.request.DeliveryRequestDto;
 import com.fooddelivery.dto.request.MenuRequestDto;
 import com.fooddelivery.dto.request.OrderItemRequestDto;
 import com.fooddelivery.dto.request.OrderRequestDto;
@@ -851,6 +850,8 @@ import com.fooddelivery.service.RestaurantService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -862,6 +863,8 @@ import java.util.Scanner;
 public class FooddeliveryApplication implements CommandLineRunner {
 
     // ─── All services injected via constructor ───────────────────────────────
+    private static final Logger log =
+            LoggerFactory.getLogger(FooddeliveryApplication.class);
     private final AuthService authService;
     private final CustomerService customerService;
     private final RestaurantService restaurantService;
@@ -919,7 +922,7 @@ public class FooddeliveryApplication implements CommandLineRunner {
             try {
                 choice = Integer.parseInt(scanner.nextLine().trim());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number.");
+                log.info("Invalid input. Please enter a number.");
                 continue;
             }
 
@@ -927,10 +930,10 @@ public class FooddeliveryApplication implements CommandLineRunner {
                 case 1 -> register(scanner);
                 case 2 -> login(scanner);
                 case 3 -> {
-                    System.out.println("👋 Exiting application...");
+                    log.info("👋 Exiting application...");
                     running = false;
                 }
-                default -> System.out.println("Invalid option. Try again.");
+                default -> log.info("Invalid option. Try again.");
             }
         }
 
@@ -943,17 +946,15 @@ public class FooddeliveryApplication implements CommandLineRunner {
 
     private void register(Scanner scanner) {
         try {
-            System.out.println("\n===== USER REGISTRATION =====");
+            log.info("\n===== USER REGISTRATION =====");
 
             User user = new User();
 
             System.out.print("Email: ");
             user.setEmail(scanner.nextLine().trim());
 
-            System.out.println(
-                    "Password must be:\n" +
-                            "- At least 8 characters\n" +
-                            "- Contain one special character (!@#$%^&*)"
+            log.info(
+                    "Password must be:\n- At least 8 characters\n- Contain one special character (!@#$%^&*)"
             );
             System.out.print("Password: ");
             user.setPassword(scanner.nextLine().trim());
@@ -963,25 +964,25 @@ public class FooddeliveryApplication implements CommandLineRunner {
             user.setRole(role);
 
             User savedUser = authService.register(user);
-            System.out.println("✅ User registered successfully.");
+            log.info("✅ User registered successfully.");
 
             switch (role) {
                 case "CUSTOMER"          -> createCustomer(scanner, savedUser);
                 case "RESTAURANT_OWNER"  -> createRestaurant(scanner, savedUser);
                 case "AGENT"             -> createAgent(scanner, savedUser);
-                default                  -> System.out.println("Unknown role – profile not created.");
+                default                  -> log.info("Unknown role – profile not created.");
             }
 
         } catch (InvalidRequestException e) {
-            System.out.println("❌ Registration failed: " + e.getMessage());
-            System.out.println("Please try again.");
+            log.info("❌ Registration failed: {}" , e.getMessage());
+            log.info("Please try again.");
         } catch (Exception e) {
-            System.out.println("❌ Unexpected error: " + e.getMessage());
+            log.info("❌ Unexpected error: {}" , e.getMessage());
         }
     }
 
     private void createCustomer(Scanner scanner, User user) {
-        System.out.println("\n===== CUSTOMER DETAILS =====");
+        log.info("\n===== CUSTOMER DETAILS =====");
         Customer customer = new Customer();
 
         System.out.print("Name: ");
@@ -995,11 +996,11 @@ public class FooddeliveryApplication implements CommandLineRunner {
 
         customer.setUserId(user.getUserId());
         customerService.createCustomer(customer);
-        System.out.println("✅ Customer profile created.");
+        log.info("✅ Customer profile created.");
     }
 
     private void createRestaurant(Scanner scanner, User user) {
-        System.out.println("\n===== RESTAURANT DETAILS =====");
+        log.info("\n===== RESTAURANT DETAILS =====");
         Restaurant restaurant = new Restaurant();
 
         System.out.print("Restaurant name: ");
@@ -1013,11 +1014,11 @@ public class FooddeliveryApplication implements CommandLineRunner {
 
         restaurant.setUserId(user.getUserId());
         restaurantService.registerRestaurant(restaurant);
-        System.out.println("✅ Restaurant profile created.");
+        log.info("✅ Restaurant profile created.");
     }
 
     private void createAgent(Scanner scanner, User user) {
-        System.out.println("\n===== AGENT DETAILS =====");
+        log.info("\n===== AGENT DETAILS =====");
         Agent agent = new Agent();
 
         System.out.print("Agent name: ");
@@ -1028,7 +1029,7 @@ public class FooddeliveryApplication implements CommandLineRunner {
 
         agent.setUserId(user.getUserId());
         deliveryService.createAgent(agent);
-        System.out.println("✅ Agent profile created.");
+        log.info("✅ Agent profile created.");
     }
 
     // =========================================================================
@@ -1037,7 +1038,7 @@ public class FooddeliveryApplication implements CommandLineRunner {
 
     private void login(Scanner scanner) {
         try {
-            System.out.println("\n===== USER LOGIN =====");
+            log.info("\n===== USER LOGIN =====");
 
             System.out.print("Email: ");
             String email = scanner.nextLine();
@@ -1046,17 +1047,17 @@ public class FooddeliveryApplication implements CommandLineRunner {
             String password = scanner.nextLine();
 
             User user = authService.login(email, password);
-            System.out.println("✅ Logged in as " + user.getRole());
+            log.info("✅ Logged in as {}" , user.getRole());
 
             switch (user.getRole()) {
                 case "CUSTOMER"         -> customerDashboard(scanner, user);
                 case "RESTAURANT_OWNER" -> restaurantOwnerDashboard(scanner, user);
                 case "AGENT"            -> agentDashboard(scanner, user);
-                default                 -> System.out.println("Unknown role.");
+                default                 -> log.info("Unknown role.");
             }
 
         } catch (Exception e) {
-            System.out.println("❌ Login failed: " + e.getMessage());
+            log.info("❌ Login failed: {}" , e.getMessage());
         }
     }
 
@@ -1067,39 +1068,39 @@ public class FooddeliveryApplication implements CommandLineRunner {
     private void customerDashboard(Scanner scanner, User user) {
         Customer customer = customerService.getCustomerByUserId(user.getUserId());
 
-        System.out.println("\n===== CUSTOMER DETAILS =====");
-        System.out.println("Name    : " + customer.getCustomerName());
-        System.out.println("Phone   : " + customer.getPhone());
-        System.out.println("Address : " + customer.getAddress());
+        log.info("\n===== CUSTOMER DETAILS =====");
+        log.info("Name    : {}" , customer.getCustomerName());
+        log.info("Phone   : {}" , customer.getPhone());
+        log.info("Address : {}" , customer.getAddress());
 
         boolean running = true;
         while (running) {
-            System.out.println("\n===== CUSTOMER MENU =====");
-            System.out.println("1. View All Available Menu Items");
-            System.out.println("2. Place an Order");
-            System.out.println("3. Make a Payment");
-            System.out.println("4. Check Payment Status");
-            System.out.println("5. Logout");
+            log.info("\n===== CUSTOMER MENU =====");
+            log.info("1. View All Available Menu Items");
+            log.info("2. Place an Order");
+            log.info("3. Make a Payment");
+            log.info("4. Check Payment Status");
+            log.info("5. Logout");
             System.out.print("Enter choice: ");
 
             int choice;
             try {
                 choice = Integer.parseInt(scanner.nextLine().trim());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input.");
+                log.info("Invalid input.");
                 continue;
             }
 
             switch (choice) {
                 case 1 -> viewAllAvailableItems();
                 case 2 -> placeOrder(scanner, customer);
-                case 3 -> processPayment(scanner);
+                case 3 -> processPayment(scanner,customer);
                 case 4 -> checkPaymentStatus(scanner);
                 case 5 -> {
-                    System.out.println("Logged out.");
+                    log.info("Logged out.");
                     running = false;
                 }
-                default -> System.out.println("Invalid option.");
+                default -> log.info("Invalid option.");
             }
         }
     }
@@ -1107,26 +1108,45 @@ public class FooddeliveryApplication implements CommandLineRunner {
     // ─── View all available items (customer-facing) ──────────────────────────
     private void viewAllAvailableItems() {
         List<MenuResponseDto> items = menuService.getAllAvailableItems();
-        System.out.println("\n--- All Available Items ---");
+        log.info("\n--- All Available Items ---");
         if (items.isEmpty()) {
-            System.out.println("No items available right now.");
+            log.info("No items available right now.");
         } else {
-            items.forEach(i -> System.out.println(
-                    i.getItemId() + " | " + i.getName() + " | Rs." + i.getPrice()
+            items.forEach(i -> log.info(
+                    "{} | {} | Rs.{}",
+                    i.getItemId(),
+                    i.getName(),
+                    i.getPrice()
             ));
         }
     }
 
     // ─── Place Order ─────────────────────────────────────────────────────────
     private void placeOrder(Scanner scanner, Customer customer) {
-        System.out.println("\n===== PLACE ORDER =====");
+        log.info("\n===== PLACE ORDER =====");
+
+
+
+        List<Restaurant> restaurants = restaurantService.getAllRestaurants();
+
+        if (restaurants.isEmpty()) {
+            log.warn("No restaurants available right now.");
+            return;
+        }
+
+        log.info("--- Available Restaurants ---");
+        restaurants.forEach(r ->
+                log.info("- {}", r.getRestaurantName())
+        );
+
+
 
         System.out.print("Enter restaurant name: ");
         String restaurantName = scanner.nextLine();
 
         Long restaurantId = restaurantRepository.findRestaurantIdByName(restaurantName);
         if (restaurantId == null) {
-            System.out.println("❌ Restaurant not found.");
+            log.info("❌ Restaurant not found.");
             return;
         }
 
@@ -1134,15 +1154,17 @@ public class FooddeliveryApplication implements CommandLineRunner {
                 menuItemRepository.findAllAvailableItemsByRestaurant(restaurantId);
 
         if (menuItems.isEmpty()) {
-            System.out.println("❌ No available items at this restaurant.");
+            log.info("❌ No available items at this restaurant.");
             return;
         }
 
-        System.out.println("\nAvailable items:");
+        log.info("\nAvailable items:");
         for (MenuItem m : menuItems) {
-            System.out.println(
-                    "- " + m.getName() +
-                            " (₹" + m.getPrice() + ") – Stock: " + m.getQuantity()
+            log.info(
+                    "- {} (₹{}) – Stock: {}",
+                    m.getName(),
+                    m.getPrice(),
+                    m.getQuantity()
             );
         }
 
@@ -1157,30 +1179,31 @@ public class FooddeliveryApplication implements CommandLineRunner {
                     menuItemRepository.findMenuItemByName(itemName, restaurantId);
 
             if (menuItem == null) {
-                System.out.println("❌ Item not found in this restaurant's menu.");
+                log.info("❌ Item not found in this restaurant's menu.");
             } else {
                 int alreadySelected =
                         selectedQuantities.getOrDefault(menuItem.getItemId(), 0);
                 int remainingStock = menuItem.getQuantity() - alreadySelected;
 
                 if (remainingStock <= 0) {
-                    System.out.println("❌ " + menuItem.getName() + " is out of stock.");
+                    log.info("❌ {} is out of stock." , menuItem.getName());
                 } else {
                     System.out.print("Enter quantity: ");
                     int quantity;
                     try {
                         quantity = Integer.parseInt(scanner.nextLine().trim());
                     } catch (NumberFormatException e) {
-                        System.out.println("❌ Invalid quantity.");
+                        log.info("❌ Invalid quantity.");
                         quantity = 0;
                     }
 
                     if (quantity <= 0) {
-                        System.out.println("❌ Quantity must be greater than zero.");
+                        log.info("❌ Quantity must be greater than zero.");
                     } else if (quantity > remainingStock) {
-                        System.out.println(
-                                "❌ Only " + remainingStock +
-                                        " available for " + menuItem.getName()
+                        log.info(
+                                "❌ Only {} available for {}",
+                                remainingStock,
+                                menuItem.getName()
                         );
                     } else {
                         items.add(new OrderItemRequestDto(menuItem.getItemId(), quantity));
@@ -1188,7 +1211,7 @@ public class FooddeliveryApplication implements CommandLineRunner {
                                 menuItem.getItemId(),
                                 alreadySelected + quantity
                         );
-                        System.out.println("✅ Added " + quantity + "x " + menuItem.getName());
+                        log.info("✅ Added {} x {}", quantity, menuItem.getName());
                     }
                 }
             }
@@ -1198,7 +1221,7 @@ public class FooddeliveryApplication implements CommandLineRunner {
         }
 
         if (items.isEmpty()) {
-            System.out.println("❌ No items selected. Order cancelled.");
+            log.info("❌ No items selected. Order cancelled.");
             return;
         }
 
@@ -1209,21 +1232,21 @@ public class FooddeliveryApplication implements CommandLineRunner {
 
         OrderResponseDto response = orderService.placeOrder(request);
 
-        System.out.println("\n✅ ORDER PLACED SUCCESSFULLY");
-        System.out.println("Order ID     : " + response.getOrderId());
-        System.out.println("Total Amount : ₹" + response.getTotalAmount());
+        log.info("\n✅ ORDER PLACED SUCCESSFULLY");
+        log.info("Order ID     : {}" , response.getOrderId());
+        log.info("Total Amount : ₹{}" , response.getTotalAmount());
     }
 
     // ─── Payment ─────────────────────────────────────────────────────────────
-    private void processPayment(Scanner scanner) {
-        System.out.println("\n===== PROCESS PAYMENT =====");
+    private void processPayment(Scanner scanner, Customer customer) {
+        log.info("\n===== PROCESS PAYMENT =====");
 
         System.out.print("Enter Order ID: ");
         Long orderId;
         try {
             orderId = Long.parseLong(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
-            System.out.println("❌ Invalid Order ID.");
+            log.info("❌ Invalid Order ID.");
             return;
         }
 
@@ -1235,7 +1258,7 @@ public class FooddeliveryApplication implements CommandLineRunner {
         try {
             amount = Double.parseDouble(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
-            System.out.println("❌ Invalid amount.");
+            log.info("❌ Invalid amount.");
             return;
         }
 
@@ -1245,39 +1268,49 @@ public class FooddeliveryApplication implements CommandLineRunner {
         request.setAmount(amount);
 
         PaymentResponseDto response = paymentService.processPayment(request);
-        System.out.println("✅ Status  : " + response.getPaymentStatus());
-        System.out.println("✅ Message : " + response.getMessage());
+        log.info("✅ Status  : {}" , response.getPaymentStatus());
+        log.info("✅ Message : {}" , response.getMessage());
 
         // Automatically trigger delivery after successful payment
         if ("SUCCESS".equalsIgnoreCase(response.getPaymentStatus())) {
-            System.out.println("\n🚚 Payment successful! Initiating delivery...");
+            log.info("\n🚚 Payment successful! Initiating delivery...");
             try {
-                deliveryService.processDeliveryAfterPayment(orderId,"Manasa");
-                System.out.println("✅ Delivery has been assigned and is on the way!");
+                Thread deliveryThread = new Thread(() -> {
+                    deliveryService.processDeliveryAfterPayment(orderId, customer.getCustomerName());
+                });
+
+                deliveryThread.start();
+
+                try {
+                    deliveryThread.join();   // ✅ WAIT until delivery finishes
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+               // log.info("✅ Delivery has been assigned and is on the way!");
             } catch (Exception e) {
-                System.out.println("⚠️ Delivery scheduling failed: " + e.getMessage());
+                log.info("⚠️ Delivery scheduling failed: {}" , e.getMessage());
             }
         }
     }
 
     private void checkPaymentStatus(Scanner scanner) {
-        System.out.println("\n===== PAYMENT STATUS =====");
+        log.info("\n===== PAYMENT STATUS =====");
 
         System.out.print("Enter Order ID: ");
         Long orderId;
         try {
             orderId = Long.parseLong(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
-            System.out.println("❌ Invalid Order ID.");
+            log.info("❌ Invalid Order ID.");
             return;
         }
 
         PaymentResponseDto fetch = paymentService.getPaymentByOrderId(orderId);
-        System.out.println("Payment ID : " + fetch.getPaymentId());
-        System.out.println("Status     : " + fetch.getPaymentStatus());
+        log.info("Payment ID : {}" , fetch.getPaymentId());
+        log.info("Status     : {}" , fetch.getPaymentStatus());
 
         boolean success = paymentService.isPaymentSuccessful(orderId);
-        System.out.println("Successful : " + success);
+        log.info("Successful : {}" , success);
     }
 
     // =========================================================================
@@ -1286,33 +1319,33 @@ public class FooddeliveryApplication implements CommandLineRunner {
 
     private void restaurantOwnerDashboard(Scanner scanner, User user) {
         Restaurant restaurant = restaurantRepository.findByUserId(user.getUserId());
-        System.out.println("\n===== RESTAURANT DETAILS =====");
-        System.out.println("Name     : " + restaurant.getRestaurantName());
-        System.out.println("Location : " + restaurant.getLocation());
-        System.out.println("Contact  : " + restaurant.getContactNumber());
+        log.info("\n===== RESTAURANT DETAILS =====");
+        log.info("Name     : {}" , restaurant.getRestaurantName());
+        log.info("Location : {}" , restaurant.getLocation());
+        log.info("Contact  : {}" , restaurant.getContactNumber());
 
         boolean running = true;
         while (running) {
-            System.out.println("\n===== RESTAURANT OWNER MENU =====");
-            System.out.println("-- Restaurant --");
-            System.out.println("1. Update My Restaurant");
-            System.out.println("2. Delete My Restaurant");
-            System.out.println("3. View All Restaurants");
-            System.out.println("-- Menu Items --");
-            System.out.println("4.  Add Menu Item");
-            System.out.println("5.  Update Menu Item");
-            System.out.println("6.  Delete Menu Item");
-            System.out.println("7.  Toggle Item Availability");
-            System.out.println("8.  View My Menu");
-            System.out.println("9.  View Menu Item by ID");
-            System.out.println("10. Logout");
+            log.info("\n===== RESTAURANT OWNER MENU =====");
+            log.info("-- Restaurant --");
+            log.info("1. Update My Restaurant");
+            log.info("2. Delete My Restaurant");
+            log.info("3. View All Restaurants");
+            log.info("-- Menu Items --");
+            log.info("4.  Add Menu Item");
+            log.info("5.  Update Menu Item");
+            log.info("6.  Delete Menu Item");
+            log.info("7.  Toggle Item Availability");
+            log.info("8.  View My Menu");
+            log.info("9.  View Menu Item by ID");
+            log.info("10. Logout");
             System.out.print("Enter choice: ");
 
             int choice;
             try {
                 choice = Integer.parseInt(scanner.nextLine().trim());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input.");
+                log.info("Invalid input.");
                 continue;
             }
 
@@ -1320,7 +1353,7 @@ public class FooddeliveryApplication implements CommandLineRunner {
                 case 1 -> updateRestaurant(scanner, restaurant.getRestaurantId());
                 case 2 -> {
                     restaurantService.deleteRestaurant(restaurant.getRestaurantId());
-                    System.out.println("✅ Restaurant deleted.");
+                    log.info("✅ Restaurant deleted.");
                     running = false;   // nothing left to manage
                 }
                 case 3  -> viewAllRestaurants();
@@ -1331,16 +1364,16 @@ public class FooddeliveryApplication implements CommandLineRunner {
                 case 8  -> viewMenuByRestaurant(restaurant.getRestaurantId());
                 case 9  -> viewMenuItemById(scanner);
                 case 10 -> {
-                    System.out.println("Logged out.");
+                    log.info("Logged out.");
                     running = false;
                 }
-                default -> System.out.println("Invalid option.");
+                default -> log.info("Invalid option.");
             }
         }
     }
 
     private void updateRestaurant(Scanner scanner, Long restaurantId) {
-        System.out.println("\n===== UPDATE RESTAURANT =====");
+        log.info("\n===== UPDATE RESTAURANT =====");
         Restaurant updated = new Restaurant();
 
         System.out.print("New Name: ");
@@ -1353,22 +1386,24 @@ public class FooddeliveryApplication implements CommandLineRunner {
         updated.setContactNumber(scanner.nextLine());
 
         restaurantService.updateRestaurant(restaurantId, updated);
-        System.out.println("✅ Restaurant updated.");
+        log.info("✅ Restaurant updated.");
     }
 
     private void viewAllRestaurants() {
         List<Restaurant> list = restaurantService.getAllRestaurants();
-        System.out.println("\n--- All Restaurants ---");
-        list.forEach(r -> System.out.println(
-                r.getRestaurantId() + " | " +
-                        r.getRestaurantName() + " | " +
-                        r.getLocation() + " | " +
-                        r.getContactNumber()
+        log.info("\n--- All Restaurants ---");
+
+        list.forEach(r -> log.info(
+                "{} | {} | {} | {}",
+                r.getRestaurantId(),
+                r.getRestaurantName(),
+                r.getLocation(),
+                r.getContactNumber()
         ));
     }
 
     private void addMenuItem(Scanner scanner, Long restaurantId) {
-        System.out.println("\n===== ADD MENU ITEM =====");
+        log.info("\n===== ADD MENU ITEM =====");
         MenuRequestDto dto = new MenuRequestDto();
         dto.setRestaurantId(restaurantId);
 
@@ -1382,23 +1417,23 @@ public class FooddeliveryApplication implements CommandLineRunner {
         try {
             dto.setPrice(new java.math.BigDecimal(scanner.nextLine().trim()));
         } catch (NumberFormatException e) {
-            System.out.println("❌ Invalid price.");
+            log.info("❌ Invalid price.");
             return;
         }
 
         menuService.addMenuItem(dto);
-        System.out.println("✅ Menu item added.");
+        log.info("✅ Menu item added.");
     }
 
     private void updateMenuItem(Scanner scanner) {
-        System.out.println("\n===== UPDATE MENU ITEM =====");
+        log.info("\n===== UPDATE MENU ITEM =====");
 
         System.out.print("Item ID to update: ");
         Long id;
         try {
             id = Long.parseLong(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
-            System.out.println("❌ Invalid ID.");
+            log.info("❌ Invalid ID.");
             return;
         }
 
@@ -1414,21 +1449,21 @@ public class FooddeliveryApplication implements CommandLineRunner {
         try {
             dto.setPrice(new java.math.BigDecimal(scanner.nextLine().trim()));
         } catch (NumberFormatException e) {
-            System.out.println("❌ Invalid price.");
+            log.info("❌ Invalid price.");
             return;
         }
 
         menuService.updateMenuItem(id, dto);
-        System.out.println("✅ Menu item updated.");
+        log.info("✅ Menu item updated.");
     }
 
     private void deleteMenuItem(Scanner scanner) {
         System.out.print("Item ID to delete: ");
         try {
             menuService.deleteMenuItem(Long.parseLong(scanner.nextLine().trim()));
-            System.out.println("✅ Menu item deleted.");
+            log.info("✅ Menu item deleted.");
         } catch (NumberFormatException e) {
-            System.out.println("❌ Invalid ID.");
+            log.info("❌ Invalid ID.");
         }
     }
 
@@ -1438,25 +1473,29 @@ public class FooddeliveryApplication implements CommandLineRunner {
         try {
             id = Long.parseLong(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
-            System.out.println("❌ Invalid ID.");
+            log.info("❌ Invalid ID.");
             return;
         }
 
         System.out.print("Available? (true/false): ");
         boolean status = Boolean.parseBoolean(scanner.nextLine().trim());
         menuService.updateAvailability(id, status);
-        System.out.println("✅ Availability updated.");
+        log.info("✅ Availability updated.");
     }
 
     private void viewMenuByRestaurant(Long restaurantId) {
         List<MenuResponseDto> list = menuService.getMenuByRestaurant(restaurantId);
-        System.out.println("\n--- My Menu Items ---");
+        log.info("\n--- My Menu Items ---");
         if (list.isEmpty()) {
-            System.out.println("No items on the menu yet.");
+            log.info("No items on the menu yet.");
         } else {
-            list.forEach(i -> System.out.println(
-                    i.getItemId() + " | " + i.getName() + " | Rs." + i.getPrice()
+            list.forEach(i -> log.info(
+                    "{} | {} | Rs.{}",
+                    i.getItemId(),
+                    i.getName(),
+                    i.getPrice()
             ));
+
         }
     }
 
@@ -1465,11 +1504,13 @@ public class FooddeliveryApplication implements CommandLineRunner {
         try {
             MenuResponseDto item =
                     menuService.getMenuItemById(Long.parseLong(scanner.nextLine().trim()));
-            System.out.println(
-                    item.getItemId() + " | " + item.getName() + " | Rs." + item.getPrice()
+            log.info("{} | {} | Rs.{}",
+                    item.getItemId(),
+                    item.getName(),
+                    item.getPrice()
             );
         } catch (NumberFormatException e) {
-            System.out.println("❌ Invalid ID.");
+            log.info("❌ Invalid ID.");
         }
     }
 
@@ -1480,24 +1521,24 @@ public class FooddeliveryApplication implements CommandLineRunner {
     private void agentDashboard(Scanner scanner, User user) {
         Agent agent = deliveryService.getAgentByUserId(user.getUserId());
 
-        System.out.println("\n===== AGENT DETAILS =====");
-        System.out.println("Name   : " + agent.getAgentName());
-        System.out.println("Phone  : " + agent.getContactNumber());
-        System.out.println("Status : " + agent.getAgentStatus());
+        log.info("\n===== AGENT DETAILS =====");
+        log.info("Name   : {}" , agent.getAgentName());
+        log.info("Phone  : {}" , agent.getContactNumber());
+        log.info("Status : {}" , agent.getAgentStatus());
 
         boolean running = true;
         while (running) {
-            System.out.println("\n===== AGENT MENU =====");
-            System.out.println("1. View My Active Deliveries");
-            System.out.println("2. Update Delivery Status");
-            System.out.println("3. Logout");
+            log.info("\n===== AGENT MENU =====");
+            log.info("1. View My Active Deliveries");
+            log.info("2. Update Delivery Status");
+            log.info("3. Logout");
             System.out.print("Enter choice: ");
 
             int choice;
             try {
                 choice = Integer.parseInt(scanner.nextLine().trim());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input.");
+                log.info("Invalid input.");
                 continue;
             }
 
@@ -1505,30 +1546,31 @@ public class FooddeliveryApplication implements CommandLineRunner {
                 case 1 -> viewAgentDeliveries(agent);
                 case 2 -> updateDeliveryStatus(scanner);
                 case 3 -> {
-                    System.out.println("Logged out.");
+                    log.info("Logged out.");
                     running = false;
                 }
-                default -> System.out.println("Invalid option.");
+                default -> log.info("Invalid option.");
             }
         }
     }
 
     private void viewAgentDeliveries(Agent agent) {
-        System.out.println("\n--- Active Deliveries ---");
+        log.info("\n--- Active Deliveries ---");
         try {
             List<DeliveryResponseDto> deliveries =
                     deliveryService.getDeliveriesByAgent(agent.getAgentId());
             if (deliveries == null || deliveries.isEmpty()) {
-                System.out.println("No active deliveries.");
+                log.info("No active deliveries.");
             } else {
-                deliveries.forEach(d -> System.out.println(
-                        "Delivery ID: " + d.getDeliveryId() +
-                                " | Order ID: " + d.getOrderId() +
-                                " | Status: " + d.getDeliveryStatus()
+                deliveries.forEach(d -> log.info(
+                        "Delivery ID: {} | Order ID: {} | Status: {}",
+                        d.getDeliveryId(),
+                        d.getOrderId(),
+                        d.getDeliveryStatus()
                 ));
             }
         } catch (Exception e) {
-            System.out.println("⚠️ Could not fetch deliveries: " + e.getMessage());
+            log.info("⚠️ Could not fetch deliveries: {}" , e.getMessage());
         }
     }
 
@@ -1538,7 +1580,7 @@ public class FooddeliveryApplication implements CommandLineRunner {
         try {
             deliveryId = Long.parseLong(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
-            System.out.println("❌ Invalid ID.");
+            log.info("❌ Invalid ID.");
             return;
         }
 
@@ -1547,9 +1589,9 @@ public class FooddeliveryApplication implements CommandLineRunner {
 
         try {
             deliveryService.updateDeliveryStatus(deliveryId, status);
-            System.out.println("✅ Delivery status updated to: " + status);
+            log.info("✅ Delivery status updated to: {}" , status);
         } catch (Exception e) {
-            System.out.println("❌ Update failed: " + e.getMessage());
+            log.info("❌ Update failed: {}" , e.getMessage());
         }
     }
 }
